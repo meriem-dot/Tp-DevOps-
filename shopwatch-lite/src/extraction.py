@@ -81,3 +81,31 @@ def lire_scan(
         texte=masquer_donnees(rapport.get("texte", "")),
         etat="RECU"
     )
+
+
+def lire_build(
+    rapport: dict,
+    numero: int,
+    env: str = "production",
+) -> Signal:
+
+    statut = rapport.get("statut", "").upper()
+
+    if statut == "OK":
+        categorie = "BUILD_OK"
+        gravite = "MINEUR"
+    else:
+        categorie = "BUILD_ECHEC"
+        gravite = "MAJEUR"
+
+    return Signal(
+        ref=f"SH-{numero:04d}",
+        date=rapport.get("date", ""),
+        origine="BUILD",
+        service=rapport.get("service", "inconnu"),
+        env=env,
+        categorie=categorie,
+        gravite=gravite,
+        texte=masquer_donnees(rapport.get("texte", "")),
+        etat="RECU"
+    )

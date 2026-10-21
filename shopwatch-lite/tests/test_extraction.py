@@ -2,6 +2,7 @@ import unittest
 from src.extraction import masquer_donnees
 from src.extraction import lire_journal
 from src.extraction import lire_scan
+from src.extraction import lire_build
 
 
 class TestExtraction(unittest.TestCase):
@@ -56,7 +57,36 @@ class TestExtraction(unittest.TestCase):
         self.assertEqual(sig.gravite, "MAJEUR")
         self.assertEqual(sig.etat, "RECU")
 
+    
+    def test_lire_build_echec(self):
+        rapport = {
+            "date": "2026-11-27T17:10:00Z",
+            "service": "paiement",
+            "statut": "ECHEC",
+            "texte": "Erreur de compilation"
+        }
 
+        sig = lire_build(rapport, 45)
+
+        self.assertEqual(sig.origine, "BUILD")
+        self.assertEqual(sig.categorie, "BUILD_ECHEC")
+        self.assertEqual(sig.gravite, "MAJEUR")
+        self.assertEqual(sig.etat, "RECU")
+
+    def test_lire_build_ok(self):
+        rapport = {
+            "date": "2026-11-27T17:15:00Z",
+            "service": "paiement",
+            "statut": "OK",
+            "texte": "Build termine avec succes"
+        }
+
+        sig = lire_build(rapport, 46)
+
+        self.assertEqual(sig.origine, "BUILD")
+        self.assertEqual(sig.categorie, "BUILD_OK")
+        self.assertEqual(sig.gravite, "MINEUR")
+        self.assertEqual(sig.etat, "RECU")
 
 
 if __name__ == "__main__":
