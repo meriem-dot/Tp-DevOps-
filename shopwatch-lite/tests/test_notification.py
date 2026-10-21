@@ -2,8 +2,7 @@
 import unittest
 
 from src.contrat import Diagnostic, Signal
-from src.notification import choisir_canal, composer
-
+from src.notification import choisir_canal, composer, diffuser
 
 def exemple(critique=True, niveau="BLOQUANT"):
     sig = Signal(
@@ -55,6 +54,21 @@ class TestNotification(unittest.TestCase):
 
         self.assertEqual(composer(sig, diag), attendu)
         self.assertEqual(len(composer(sig, diag).split("\n")), 5)
+    
+    
+    def test_diffuser(self):
+        sig, diag = exemple()
+        registre = []
+
+        msg = diffuser(sig, diag, registre)
+
+        self.assertEqual(msg.signal_ref, "SH-0125")
+        self.assertEqual(msg.canal, "SLACK")
+        self.assertEqual(msg.destinataire, "astreinte-shop")
+        self.assertEqual(msg.contenu, composer(sig, diag))
+        self.assertEqual(registre, [msg])
+        self.assertEqual(sig.etat, "DIFFUSE")
+
 
 
 if __name__ == "__main__":
