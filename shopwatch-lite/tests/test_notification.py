@@ -2,7 +2,13 @@
 import unittest
 
 from src.contrat import Diagnostic, Signal
-from src.notification import choisir_canal, composer, diffuser
+from src.notification import (
+    choisir_canal,
+    composer,
+    diffuser,
+    approuver,
+    consigner,
+)
 
 def exemple(critique=True, niveau="BLOQUANT"):
     sig = Signal(
@@ -68,6 +74,47 @@ class TestNotification(unittest.TestCase):
         self.assertEqual(msg.contenu, composer(sig, diag))
         self.assertEqual(registre, [msg])
         self.assertEqual(sig.etat, "DIFFUSE")
+        
+    
+    def test_approbation_action_critique(self):
+        _, diag = exemple(critique=True)
+
+        self.assertTrue(approuver(diag, " OUI "))
+        self.assertTrue(approuver(diag, "yes"))
+        self.assertTrue(approuver(diag, "Ok"))
+        self.assertTrue(approuver(diag, "o"))
+        self.assertFalse(approuver(diag, "n"))
+        self.assertFalse(approuver(diag, ""))
+
+    def test_approbation_action_non_critique(self):
+        _, diag = exemple(critique=False)
+
+        self.assertTrue(approuver(diag, "n"))
+        self.assertTrue(approuver(diag, ""))
+
+    def test_consigner(self):
+        _, diag = exemple()
+        carnet = []
+
+        entree = consigner(
+            diag,
+            True,
+            "astreinte-shop",
+            carnet,
+            "2026-11-27T17:10:00Z",
+        )
+
+        attendu = {
+            "ref": "SH-0125",
+            "action": "Isoler le service paiement",
+            "accord": True,
+            "responsable": "astreinte-shop",
+            "instant": "2026-11-27T17:10:00Z",
+        }
+
+        self.assertEqual(entree, attendu)
+        self.assertEqual(carnet, [attendu])
+
 
 
 

@@ -46,7 +46,13 @@ def diffuser(sig: Signal, diag: Diagnostic, registre: list) -> Message:
 
 
 def approuver(diag: Diagnostic, reponse: str) -> bool:
-    raise NotImplementedError
+    if not diag.critique:
+        return True
+
+    reponse_normalisee = "".join(reponse.split()).lower()
+    return reponse_normalisee in {"o", "oui", "ok", "yes"}
+
+
 
 
 def consigner(
@@ -56,4 +62,14 @@ def consigner(
     carnet: list,
     instant: str,
 ) -> dict:
-    raise NotImplementedError
+    entree = {
+        "ref": diag.signal_ref,
+        "action": diag.action,
+        "accord": accord,
+        "responsable": responsable,
+        "instant": instant,
+    }
+
+    carnet.append(entree)
+    return entree
+
