@@ -1,30 +1,21 @@
+
+import re
 from src.contrat import Signal
 
 
 def masquer_donnees(texte: str) -> str:
-    raise NotImplementedError
+    # Masquer les mots de passe
+    texte = re.sub(
+        r"(?i)\b(pwd|password|token|secret)=\S+",
+        lambda m: m.group(1) + "=[MASQUE]",
+        texte
+    )
 
+    # Masquer les numeros de carte bancaire
+    texte = re.sub(
+        r"\b\d{13,19}\b",
+        "[MASQUE]",
+        texte
+    )
 
-def lire_journal(
-    ligne: str,
-    numero: int,
-    origine: str = "PAIEMENT",
-    env: str = "production",
-) -> Signal:
-    raise NotImplementedError
-
-
-def lire_scan(
-    rapport: dict,
-    numero: int,
-    env: str = "production",
-) -> Signal:
-    raise NotImplementedError
-
-
-def lire_build(
-    rapport: dict,
-    numero: int,
-    env: str = "production",
-) -> Signal:
-    raise NotImplementedError
+    return texte
