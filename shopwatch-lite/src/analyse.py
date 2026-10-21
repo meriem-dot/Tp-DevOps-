@@ -21,3 +21,13 @@ def compter_incidents(sig: Signal, compteur: dict) -> int:
         return compteur[sig.service]
 
     return 0
+
+
+def chercher_fiches(sig: Signal, base: dict) -> list:
+    conseils = []
+
+    for mot_cle, conseil in base.items():
+        if mot_cle.lower() in sig.texte.lower():
+            conseils.append(conseil)
+
+    return conseils
