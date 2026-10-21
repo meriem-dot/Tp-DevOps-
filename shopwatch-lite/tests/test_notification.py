@@ -2,7 +2,7 @@
 import unittest
 
 from src.contrat import Diagnostic, Signal
-from src.notification import choisir_canal
+from src.notification import choisir_canal, composer
 
 
 def exemple(critique=True, niveau="BLOQUANT"):
@@ -40,6 +40,21 @@ class TestNotification(unittest.TestCase):
     def test_canal_invalide(self):
         with self.assertRaises(ValueError):
             choisir_canal("INCONNU")
+    
+    
+    def test_composer(self):
+        sig, diag = exemple()
+
+        attendu = (
+            "*** BLOQUANT *** Service : paiement\n"
+            "Constat : timeout passerelle apres 30s\n"
+            "Cause : Passerelle lente\n"
+            "A faire : Isoler le service paiement\n"
+            "Origines : PAIEMENT"
+        )
+
+        self.assertEqual(composer(sig, diag), attendu)
+        self.assertEqual(len(composer(sig, diag).split("\n")), 5)
 
 
 if __name__ == "__main__":

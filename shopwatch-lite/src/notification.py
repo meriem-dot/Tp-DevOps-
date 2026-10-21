@@ -16,8 +16,18 @@ def choisir_canal(niveau: str) -> str:
     return canaux[niveau]
 
 
+
 def composer(sig: Signal, diag: Diagnostic) -> str:
-    raise NotImplementedError
+    origines = " + ".join(diag.origines)
+
+    return (
+        f"*** {diag.niveau} *** Service : {sig.service}\n"
+        f"Constat : {sig.texte}\n"
+        f"Cause : {diag.cause}\n"
+        f"A faire : {diag.action}\n"
+        f"Origines : {origines}"
+    )
+
 
 
 def diffuser(sig: Signal, diag: Diagnostic, registre: list) -> Message:
