@@ -63,3 +63,21 @@ def lire_journal(
         texte=masquer_donnees(ligne),
         etat="RECU"
     )
+
+def lire_scan(
+    rapport: dict,
+    numero: int,
+    env: str = "production",
+) -> Signal:
+
+    return Signal(
+        ref=f"SH-{numero:04d}",
+        date=rapport.get("date", ""),
+        origine="SCANNER",
+        service=rapport.get("service", "inconnu"),
+        env=env,
+        categorie="FAILLE",
+        gravite=rapport.get("gravite", "MAJEUR"),
+        texte=masquer_donnees(rapport.get("texte", "")),
+        etat="RECU"
+    )

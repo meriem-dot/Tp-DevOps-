@@ -1,6 +1,7 @@
 import unittest
 from src.extraction import masquer_donnees
 from src.extraction import lire_journal
+from src.extraction import lire_scan
 
 
 class TestExtraction(unittest.TestCase):
@@ -36,6 +37,25 @@ class TestExtraction(unittest.TestCase):
         sig = lire_journal(ligne, 43, env="test")
 
         self.assertEqual(sig.env, "test")
+
+    
+    def test_lire_scan(self):
+        rapport = {
+            "date": "2026-11-27T17:05:00Z",
+            "service": "paiement",
+            "gravite": "MAJEUR",
+            "faille": "CVE-2026-1234",
+            "texte": "Faille connue dans une dependance"
+        }
+
+        sig = lire_scan(rapport, 44)
+
+        self.assertEqual(sig.ref, "SH-0044")
+        self.assertEqual(sig.origine, "SCANNER")
+        self.assertEqual(sig.categorie, "FAILLE")
+        self.assertEqual(sig.gravite, "MAJEUR")
+        self.assertEqual(sig.etat, "RECU")
+
 
 
 
