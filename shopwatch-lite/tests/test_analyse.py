@@ -3,6 +3,7 @@ import unittest
 from src.analyse import est_repete
 from src.contrat import Signal
 from src.analyse import est_repete, compter_incidents
+from src.analyse import chercher_fiches
 
 def sig(date="2026-11-27T17:00:00Z"):
     return Signal(
@@ -70,6 +71,35 @@ class TestAnalyse(unittest.TestCase):
             self.assertEqual(compter_incidents(signal, compteur), 0)
 
         self.assertEqual(compteur, {"paiement": 2})
+    def test_chercher_fiches_ignore_casse(self):
+        signal = sig()
+        signal.texte = "TIMEOUT passerelle"
+        base = {"timeout": "Verifier la passerelle"}
 
+        self.assertEqual(
+            chercher_fiches(signal, base),
+            ["Verifier la passerelle"],
+        )
+
+    def test_chercher_plusieurs_fiches(self):
+        signal = sig()
+        signal.texte = "BUILD interrompu apres un TIMEOUT"
+        base = {
+            "timeout": "Conseil timeout",
+            "build": "Conseil build",
+        }
+
+        self.assertEqual(
+            chercher_fiches(signal, base),
+            ["Conseil timeout", "Conseil build"],
+        )
+
+    def test_chercher_fiches_sans_resultat(self):
+        signal = sig()
+        signal.texte = "Service demarre"
+        base = {"timeout": "Verifier la passerelle"}
+
+        self.assertEqual(chercher_fiches(signal, base), [])
 if __name__ == "__main__":
     unittest.main()
+    
