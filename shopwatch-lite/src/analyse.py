@@ -15,3 +15,9 @@ def est_repete(sig: Signal, vus: set) -> bool:
 
     vus.add(cle)
     return False
+def compter_incidents(sig: Signal, compteur: dict) -> int:
+    if sig.categorie == "JOURNAL" and sig.gravite in ("MAJEUR", "BLOQUANT"):
+        compteur[sig.service] = compteur.get(sig.service, 0) + 1
+        return compteur[sig.service]
+
+    return 0
