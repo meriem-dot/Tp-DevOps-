@@ -49,6 +49,7 @@ jobs:
           name: shopwatch-lite-${{ github.ref_name }}
           path: dist/
 
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
