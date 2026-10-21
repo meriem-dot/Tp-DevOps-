@@ -19,3 +19,47 @@ def masquer_donnees(texte: str) -> str:
     )
 
     return texte
+
+
+def lire_journal(
+    ligne: str,
+    numero: int,
+    origine: str = "PAIEMENT",
+    env: str = "production",
+) -> Signal:
+
+    match = re.search(
+        r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}",
+        ligne
+    )
+
+    if not match:
+        raise ValueError("Date absente du journal")
+
+    date = match.group().replace(" ", "T") + "Z"
+
+    texte = ligne.upper()
+
+    if "CRITICAL" in texte or "FATAL" in texte:
+        gravite = "BLOQUANT"
+    elif "ERROR" in texte:
+        gravite = "MAJEUR"
+    elif "WARNING" in texte or "WARN" in texte:
+        gravite = "MODERE"
+    else:
+        gravite = "MINEUR"
+
+    elements = ligne.split()
+    service = elements[2] if len(elements) > 2 else "inconnu"
+
+    return Signal(
+        ref=f"SH-{numero:04d}",
+        date=date,
+        origine=origine,
+        service=service,
+        env=env,
+        categorie="JOURNAL",
+        gravite=gravite,
+        texte=masquer_donnees(ligne),
+        etat="RECU"
+    )
